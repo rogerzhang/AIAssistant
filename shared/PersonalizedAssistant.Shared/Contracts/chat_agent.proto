@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package PersonalizedAssistant.ChatAgent;
+
+option csharp_namespace = "PersonalizedAssistant.Shared.Contracts.ChatAgent";
+
+service ChatAgentService {
+  rpc ProcessMessage(ProcessMessageRequest) returns (ProcessMessageResponse);
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+  rpc GetSession(GetSessionRequest) returns (GetSessionResponse);
+  rpc UpdateSession(UpdateSessionRequest) returns (UpdateSessionResponse);
+  rpc GetUserSessions(GetUserSessionsRequest) returns (GetUserSessionsResponse);
+  rpc DeleteSession(DeleteSessionRequest) returns (DeleteSessionResponse);
+  rpc GetSuggestedQuestions(GetSuggestedQuestionsRequest) returns (GetSuggestedQuestionsResponse);
+}
+
+message ProcessMessageRequest {
+  string user_id = 1;
+  string message = 2;
+  string session_id = 3;
+}
+
+message ProcessMessageResponse {
+  bool success = 1;
+  string message = 2;
+  ChatResponse response = 3;
+}
+
+message CreateSessionRequest {
+  string user_id = 1;
+}
+
+message CreateSessionResponse {
+  bool success = 1;
+  string message = 2;
+  ChatSession session = 3;
+}
+
+message GetSessionRequest {
+  string session_id = 1;
+}
+
+message GetSessionResponse {
+  bool success = 1;
+  string message = 2;
+  ChatSession session = 3;
+}
+
+message UpdateSessionRequest {
+  ChatSession session = 1;
+}
+
+message UpdateSessionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetUserSessionsRequest {
+  string user_id = 1;
+  int32 limit = 2;
+}
+
+message GetUserSessionsResponse {
+  bool success = 1;
+  string message = 2;
+  repeated ChatSession sessions = 3;
+}
+
+message DeleteSessionRequest {
+  string session_id = 1;
+}
+
+message DeleteSessionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetSuggestedQuestionsRequest {
+  string user_id = 1;
+}
+
+message GetSuggestedQuestionsResponse {
+  bool success = 1;
+  string message = 2;
+  repeated string questions = 3;
+}
+
+message ChatResponse {
+  string message = 1;
+  string session_id = 2;
+  repeated string sources = 3;
+  map<string, string> metadata = 4;
+  int64 timestamp = 5;
+  double confidence = 6;
+}
+
+message ChatSession {
+  string id = 1;
+  string user_id = 2;
+  string session_id = 3;
+  repeated ChatMessage messages = 4;
+  int64 created_at = 5;
+  int64 last_activity_at = 6;
+  bool is_active = 7;
+  map<string, string> context = 8;
+}
+
+message ChatMessage {
+  string id = 1;
+  string content = 2;
+  string role = 3;
+  int64 timestamp = 4;
+  map<string, string> metadata = 5;
+  repeated string sources = 6;
+}

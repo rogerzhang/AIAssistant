@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package PersonalizedAssistant.Auth;
+
+option csharp_namespace = "PersonalizedAssistant.Shared.Contracts.Auth";
+
+service AuthService {
+  rpc AuthenticateUser(AuthenticateUserRequest) returns (AuthenticateUserResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc UpdateUserLastLogin(UpdateUserLastLoginRequest) returns (UpdateUserLastLoginResponse);
+  rpc GrantDataPermission(GrantDataPermissionRequest) returns (GrantDataPermissionResponse);
+  rpc RevokeDataPermission(RevokeDataPermissionRequest) returns (RevokeDataPermissionResponse);
+  rpc GetUserPermissions(GetUserPermissionsRequest) returns (GetUserPermissionsResponse);
+}
+
+message AuthenticateUserRequest {
+  string google_token = 1;
+}
+
+message AuthenticateUserResponse {
+  bool success = 1;
+  string message = 2;
+  User user = 3;
+}
+
+message CreateUserRequest {
+  string google_id = 1;
+  string email = 2;
+  string name = 3;
+  string profile_picture = 4;
+}
+
+message CreateUserResponse {
+  bool success = 1;
+  string message = 2;
+  User user = 3;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  bool success = 1;
+  string message = 2;
+  User user = 3;
+}
+
+message UpdateUserLastLoginRequest {
+  string user_id = 1;
+}
+
+message UpdateUserLastLoginResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GrantDataPermissionRequest {
+  string user_id = 1;
+  DataPermission permission = 2;
+}
+
+message GrantDataPermissionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RevokeDataPermissionRequest {
+  string user_id = 1;
+  string source = 2;
+}
+
+message RevokeDataPermissionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetUserPermissionsRequest {
+  string user_id = 1;
+}
+
+message GetUserPermissionsResponse {
+  bool success = 1;
+  string message = 2;
+  repeated DataPermission permissions = 3;
+}
+
+message User {
+  string id = 1;
+  string google_id = 2;
+  string email = 3;
+  string name = 4;
+  string profile_picture = 5;
+  int64 created_at = 6;
+  int64 last_login_at = 7;
+  bool is_active = 8;
+  repeated DataPermission permissions = 9;
+}
+
+message DataPermission {
+  string source = 1;
+  int64 granted_at = 2;
+  bool is_active = 3;
+  repeated string scope = 4;
+}

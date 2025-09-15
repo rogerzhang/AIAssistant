@@ -1,0 +1,35 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "PersonalizedAssistant": "Debug"
+    }
+  },
+  "MongoDb": {
+    "ConnectionString": "mongodb://localhost:27017",
+    "DatabaseName": "PersonalizedAssistant_Dev"
+  },
+  "Jwt": {
+    "SecretKey": "DevelopmentSecretKeyThatIsAtLeast32CharactersLong!",
+    "Issuer": "PersonalizedAssistant-Dev",
+    "Audience": "PersonalizedAssistantUsers-Dev",
+    "ExpirationMinutes": 120
+  },
+  "GoogleApi": {
+    "ClientId": "YOUR_GOOGLE_CLIENT_ID",
+    "ClientSecret": "YOUR_GOOGLE_CLIENT_SECRET",
+    "Scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/drive.readonly",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+  "Grpc": {
+    "AuthServiceUrl": "https://localhost:5001",
+    "DataCollectionServiceUrl": "https://localhost:5002",
+    "DataProcessingServiceUrl": "https://localhost:5003",
+    "ChatAgentServiceUrl": "https://localhost:5004"
+  }
+}

@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+package PersonalizedAssistant.DataCollection;
+
+option csharp_namespace = "PersonalizedAssistant.Shared.Contracts.DataCollection";
+
+service DataCollectionService {
+  rpc CollectGmailData(CollectGmailDataRequest) returns (CollectGmailDataResponse);
+  rpc CollectGoogleDriveData(CollectGoogleDriveDataRequest) returns (CollectGoogleDriveDataResponse);
+  rpc CollectIOSContactsData(CollectIOSContactsDataRequest) returns (CollectIOSContactsDataResponse);
+  rpc CollectIOSCalendarData(CollectIOSCalendarDataRequest) returns (CollectIOSCalendarDataResponse);
+  rpc GetCollectedData(GetCollectedDataRequest) returns (GetCollectedDataResponse);
+  rpc GetDataById(GetDataByIdRequest) returns (GetDataByIdResponse);
+  rpc UpdateDataStatus(UpdateDataStatusRequest) returns (UpdateDataStatusResponse);
+  rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse);
+  rpc GetPendingData(GetPendingDataRequest) returns (GetPendingDataResponse);
+}
+
+message CollectGmailDataRequest {
+  string user_id = 1;
+  string access_token = 2;
+}
+
+message CollectGmailDataResponse {
+  bool success = 1;
+  string message = 2;
+  int32 collected_count = 3;
+}
+
+message CollectGoogleDriveDataRequest {
+  string user_id = 1;
+  string access_token = 2;
+}
+
+message CollectGoogleDriveDataResponse {
+  bool success = 1;
+  string message = 2;
+  int32 collected_count = 3;
+}
+
+message CollectIOSContactsDataRequest {
+  string user_id = 1;
+  repeated IOSContactData contacts = 2;
+}
+
+message CollectIOSContactsDataResponse {
+  bool success = 1;
+  string message = 2;
+  int32 collected_count = 3;
+}
+
+message CollectIOSCalendarDataRequest {
+  string user_id = 1;
+  repeated IOSCalendarData events = 2;
+}
+
+message CollectIOSCalendarDataResponse {
+  bool success = 1;
+  string message = 2;
+  int32 collected_count = 3;
+}
+
+message GetCollectedDataRequest {
+  string user_id = 1;
+  string source = 2;
+}
+
+message GetCollectedDataResponse {
+  bool success = 1;
+  string message = 2;
+  repeated DataCollection data = 3;
+}
+
+message GetDataByIdRequest {
+  string data_id = 1;
+}
+
+message GetDataByIdResponse {
+  bool success = 1;
+  string message = 2;
+  DataCollection data = 3;
+}
+
+message UpdateDataStatusRequest {
+  string data_id = 1;
+  string status = 2;
+  string error_message = 3;
+}
+
+message UpdateDataStatusResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteDataRequest {
+  string data_id = 1;
+}
+
+message DeleteDataResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetPendingDataRequest {
+  int32 limit = 1;
+}
+
+message GetPendingDataResponse {
+  bool success = 1;
+  string message = 2;
+  repeated DataCollection data = 3;
+}
+
+message DataCollection {
+  string id = 1;
+  string user_id = 2;
+  string source = 3;
+  string data_type = 4;
+  string raw_data = 5;
+  map<string, string> processed_data = 6;
+  string status = 7;
+  int64 collected_at = 8;
+  int64 processed_at = 9;
+  string error_message = 10;
+  map<string, string> metadata = 11;
+}
+
+message IOSContactData {
+  string first_name = 1;
+  string last_name = 2;
+  repeated string emails = 3;
+  repeated string phones = 4;
+  string organization = 5;
+  string job_title = 6;
+}
+
+message IOSCalendarData {
+  string title = 1;
+  string description = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
+  string location = 5;
+  repeated string attendees = 6;
+  bool is_all_day = 7;
+}
