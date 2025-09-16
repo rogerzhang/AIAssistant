@@ -1,0 +1,147 @@
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: personalized-assistant-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: PersonalizedAssistant
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - personalized-assistant-network
+
+  api:
+    build:
+      context: .
+      dockerfile: src/PersonalizedAssistant.API/Dockerfile
+    container_name: personalized-assistant-api
+    restart: unless-stopped
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - MongoDb__ConnectionString=mongodb://admin:password123@mongodb:27017/PersonalizedAssistant?authSource=admin
+      - Jwt__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - Jwt__Issuer=PersonalizedAssistant
+      - Jwt__Audience=PersonalizedAssistantUsers
+    depends_on:
+      - mongodb
+    networks:
+      - personalized-assistant-network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/PersonalizedAssistant.AuthService/Dockerfile
+    container_name: personalized-assistant-auth-service
+    restart: unless-stopped
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - MongoDb__ConnectionString=mongodb://admin:password123@mongodb:27017/PersonalizedAssistant?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - personalized-assistant-network
+
+  data-collection-service:
+    build:
+      context: .
+      dockerfile: services/PersonalizedAssistant.DataCollectionService/Dockerfile
+    container_name: personalized-assistant-data-collection-service
+    restart: unless-stopped
+    ports:
+      - "5002:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - MongoDb__ConnectionString=mongodb://admin:password123@mongodb:27017/PersonalizedAssistant?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - personalized-assistant-network
+
+  data-processing-service:
+    build:
+      context: .
+      dockerfile: services/PersonalizedAssistant.DataProcessingService/Dockerfile
+    container_name: personalized-assistant-data-processing-service
+    restart: unless-stopped
+    ports:
+      - "5003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - MongoDb__ConnectionString=mongodb://admin:password123@mongodb:27017/PersonalizedAssistant?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - personalized-assistant-network
+
+  chat-agent-service:
+    build:
+      context: .
+      dockerfile: services/PersonalizedAssistant.ChatAgentService/Dockerfile
+    container_name: personalized-assistant-chat-agent-service
+    restart: unless-stopped
+    ports:
+      - "5004:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - MongoDb__ConnectionString=mongodb://admin:password123@mongodb:27017/PersonalizedAssistant?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - personalized-assistant-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: personalized-assistant-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - personalized-assistant-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: personalized-assistant-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - personalized-assistant-network
+
+volumes:
+  mongodb_data:
+  grafana_data:
+  prometheus_data:
+
+networks:
+  personalized-assistant-network:
+    driver: bridge

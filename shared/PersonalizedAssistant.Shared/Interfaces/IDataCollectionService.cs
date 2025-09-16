@@ -15,3 +15,4 @@ public interface IDataCollectionService
     Task<bool> DeleteDataAsync(string dataId);
     Task<List<DataCollection>> GetPendingDataAsync(int limit = 100);
 }
+

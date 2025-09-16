@@ -18,3 +18,4 @@ var app = builder.Build();
 app.MapGrpcService<PersonalizedAssistant.Infrastructure.Services.DataCollectionService>();
 
 app.Run();
+

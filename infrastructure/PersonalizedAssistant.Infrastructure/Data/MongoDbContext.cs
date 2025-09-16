@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using PersonalizedAssistant.Shared.Models;
+using PersonalizedAssistant.Infrastructure.Configuration;
 
 namespace PersonalizedAssistant.Infrastructure.Data;
 
@@ -23,8 +24,3 @@ public class MongoDbContext
     public IMongoCollection<IOSCalendarData> IOSCalendarData => _database.GetCollection<IOSCalendarData>("ios_calendar_data");
 }
 
-public class MongoDbSettings
-{
-    public string ConnectionString { get; set; } = string.Empty;
-    public string DatabaseName { get; set; } = string.Empty;
-}

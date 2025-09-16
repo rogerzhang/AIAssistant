@@ -45,3 +45,4 @@ scrape_configs:
     static_configs:
       - targets: ['mongodb:27017']
     scrape_interval: 30s
+

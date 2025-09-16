@@ -273,3 +273,4 @@ public class GetDataByIdResponse
     public string Message { get; set; } = string.Empty;
     public DataCollection? Data { get; set; }
 }
+

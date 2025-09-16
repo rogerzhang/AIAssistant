@@ -241,3 +241,4 @@ public class GetSuggestionsResponse
     public string Message { get; set; } = string.Empty;
     public List<string> Questions { get; set; } = new();
 }
+

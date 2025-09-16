@@ -31,3 +31,4 @@ public class ProcessingResult
     public List<string> Errors { get; set; } = new();
     public TimeSpan ProcessingTime { get; set; }
 }
+

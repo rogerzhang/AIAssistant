@@ -9,6 +9,9 @@ Before you begin, ensure you have the following installed:
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
 - [Git](https://git-scm.com/downloads)
+- [MongoDB](https://www.mongodb.com/try/download/community) (Alternative: Use Docker container)
+
+> **Note**: If you encounter Docker Hub connectivity issues, you can install MongoDB locally using Homebrew (macOS) or the official MongoDB installer.
 
 ## 🏃‍♂️ Quick Setup (5 minutes)
 
@@ -38,6 +41,8 @@ cd PersonalizedAssistant
    ```
 
 ### 3. Start the Application
+
+#### Option A: Using Docker (Recommended)
 ```bash
 # Start all services
 ./scripts/run-dev.sh
@@ -46,11 +51,47 @@ cd PersonalizedAssistant
 docker-compose up -d
 ```
 
+#### Option B: Using Local Services (If Docker Hub issues)
+```bash
+# Install MongoDB locally (macOS)
+brew tap mongodb/brew
+brew install mongodb-community
+
+# Install monitoring tools locally
+brew install grafana prometheus
+
+# Start all services
+brew services start mongodb/brew/mongodb-community
+brew services start grafana
+brew services start prometheus
+
+# Start API service directly
+cd src/PersonalizedAssistant.API
+dotnet run
+```
+
 ### 4. Verify Installation
 - **API Documentation**: http://localhost:8080 (Swagger UI)
 - **Health Check**: http://localhost:8080/health
-- **Grafana Monitoring**: http://localhost:3000 (admin/admin123)
+- **Grafana Monitoring**: http://localhost:3000 
+  - Docker: admin/admin123
+  - Local: admin/admin (first login)
 - **Prometheus Metrics**: http://localhost:9090
+
+#### Configuration Verification
+```bash
+# Test API health
+curl http://localhost:8080/health
+# Should return: Healthy
+
+# Test MongoDB connection
+mongosh --eval "db.runCommand('ping')"
+# Should return: { ok: 1 }
+
+# Test Swagger UI
+curl -I http://localhost:8080/
+# Should return: HTTP/1.1 200 OK
+```
 
 ## 🧪 Test the API
 
@@ -84,13 +125,30 @@ curl -X POST http://localhost:8080/api/chat/message \
 
 ### Grafana Dashboards
 1. Open http://localhost:3000
-2. Login with admin/admin123
+2. Login credentials:
+   - **Docker version**: admin/admin123
+   - **Local version**: admin/admin (change on first login)
 3. View service metrics and performance
 
 ### Prometheus Metrics
 1. Open http://localhost:9090
 2. Query metrics like `http_requests_total`
 3. Set up alerts and monitoring
+
+### Local Monitoring Setup
+If using local installation:
+```bash
+# Check service status
+brew services list | grep -E "(grafana|prometheus)"
+
+# Restart services if needed
+brew services restart grafana
+brew services restart prometheus
+
+# View service logs
+brew services info grafana
+brew services info prometheus
+```
 
 ## 🔧 Development
 
@@ -103,6 +161,11 @@ dotnet run
 # Auth Service
 cd services/PersonalizedAssistant.AuthService
 dotnet run
+
+# Monitoring Services (if using local installation)
+brew services start grafana
+brew services start prometheus
+brew services start mongodb/brew/mongodb-community
 ```
 
 ### View Logs
@@ -124,6 +187,8 @@ docker-compose down
 ### Common Issues
 
 #### 1. MongoDB Connection Failed
+
+**Docker Container Issues:**
 ```bash
 # Check if MongoDB is running
 docker ps | grep mongodb
@@ -132,12 +197,78 @@ docker ps | grep mongodb
 docker-compose restart mongodb
 ```
 
-#### 2. Google API Authentication Failed
+**Docker Hub Connectivity Issues:**
+If you see errors like "failed to resolve reference docker.io/library/mongo:6.0":
+```bash
+# Option 1: Install all services locally (macOS)
+brew tap mongodb/brew
+brew install mongodb-community grafana prometheus
+
+# Start all services
+brew services start mongodb/brew/mongodb-community
+brew services start grafana
+brew services start prometheus
+
+# Option 2: Use modified docker-compose (excludes MongoDB)
+# The project includes a backup docker-compose.yml.backup
+# Use the modified version that connects to local MongoDB
+```
+
+#### 2. Monitoring Services Not Accessible
+
+**Grafana/Prometheus Not Loading:**
+```bash
+# Check if services are running
+brew services list | grep -E "(grafana|prometheus)"
+
+# Start services if not running
+brew services start grafana
+brew services start prometheus
+
+# Check service status
+curl -I http://localhost:3000  # Grafana
+curl -I http://localhost:9090  # Prometheus
+```
+
+**Grafana Login Issues:**
+- Docker version: admin/admin123
+- Local version: admin/admin (change password on first login)
+
+**MongoDB Configuration Issues:**
+If you see errors like "The connection string '' is not valid" or "MongoDbSettings ambiguous reference":
+
+```bash
+# Check if MongoDB is running
+mongosh --eval "db.runCommand('ping')"
+
+# Verify configuration file
+cat src/PersonalizedAssistant.API/appsettings.json | grep -A 3 "MongoDb"
+
+# Check for compilation errors
+cd src/PersonalizedAssistant.API
+dotnet build
+
+# If you see "MongoDbSettings ambiguous reference" errors:
+# This has been fixed in the latest version by removing duplicate class definitions
+# The MongoDbSettings class is now only defined in Configuration/AppSettings.cs
+
+# Restart API service
+pkill -f "dotnet run"
+cd src/PersonalizedAssistant.API
+dotnet run --urls="http://localhost:8080"
+```
+
+**Configuration Fix Applied:**
+- ✅ Removed duplicate `MongoDbSettings` class definition from `MongoDbContext.cs`
+- ✅ Fixed namespace conflicts in `ServiceCollectionExtensions.cs`
+- ✅ MongoDB connection string now properly binds from `appsettings.json`
+
+#### 3. Google API Authentication Failed
 - Verify your Google API credentials
 - Check that Gmail and Drive APIs are enabled
 - Ensure OAuth consent screen is configured
 
-#### 3. Services Not Starting
+#### 4. Services Not Starting
 ```bash
 # Check service logs
 docker-compose logs service-name

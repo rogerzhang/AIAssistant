@@ -113,3 +113,4 @@ message ChatMessage {
   map<string, string> metadata = 5;
   repeated string sources = 6;
 }
+

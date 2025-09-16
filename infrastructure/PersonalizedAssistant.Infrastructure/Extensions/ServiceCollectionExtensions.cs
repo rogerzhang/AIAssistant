@@ -21,13 +21,14 @@ public static class ServiceCollectionExtensions
     {
         // Configuration
         services.Configure<AppSettings>(configuration);
+        services.Configure<MongoDbSettings>(configuration.GetSection("MongoDb"));
         var appSettings = configuration.Get<AppSettings>() ?? new AppSettings();
 
         // MongoDB
         services.AddSingleton<IMongoClient>(provider =>
         {
-            var settings = provider.GetRequiredService<IOptions<AppSettings>>().Value;
-            return new MongoClient(settings.MongoDb.ConnectionString);
+            var mongoSettings = provider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+            return new MongoClient(mongoSettings.ConnectionString);
         });
         services.AddScoped<MongoDbContext>();
 

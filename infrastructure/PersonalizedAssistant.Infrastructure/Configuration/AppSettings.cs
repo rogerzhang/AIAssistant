@@ -45,3 +45,4 @@ public class LoggingSettings
     public bool EnableConsoleLogging { get; set; } = true;
     public bool EnableFileLogging { get; set; } = true;
 }
+

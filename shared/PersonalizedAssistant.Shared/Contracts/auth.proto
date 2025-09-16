@@ -104,3 +104,4 @@ message DataPermission {
   bool is_active = 3;
   repeated string scope = 4;
 }
+

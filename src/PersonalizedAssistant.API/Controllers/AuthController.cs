@@ -223,3 +223,4 @@ public class PermissionsResponse
     public string Message { get; set; } = string.Empty;
     public List<DataPermission> Permissions { get; set; } = new();
 }
+

@@ -76,3 +76,4 @@ echo "3. Visit http://localhost:5000 for the API documentation"
 echo "4. Visit http://localhost:3000 for Grafana monitoring (admin/admin123)"
 echo ""
 echo "Happy coding! 🚀"
+

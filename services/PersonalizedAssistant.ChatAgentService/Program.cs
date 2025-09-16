@@ -18,3 +18,4 @@ var app = builder.Build();
 app.MapGrpcService<PersonalizedAssistant.Infrastructure.Services.ChatAgentService>();
 
 app.Run();
+

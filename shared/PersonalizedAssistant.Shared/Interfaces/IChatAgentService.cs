@@ -22,3 +22,4 @@ public class ChatResponse
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     public double Confidence { get; set; } = 0.0;
 }
+

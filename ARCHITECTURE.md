@@ -172,6 +172,31 @@ Client → API Gateway → Chat Agent Service → Data Processing Service → Mo
 - User data isolation
 - GDPR compliance considerations
 
+## Configuration Management
+
+### Configuration Structure
+- **appsettings.json**: Main configuration file
+- **appsettings.Development.json**: Development-specific settings
+- **Environment Variables**: Production secrets and overrides
+
+### Key Configuration Areas
+- **MongoDB Settings**: Connection string and database name
+- **JWT Settings**: Secret key, issuer, audience, and expiration
+- **Google API Settings**: Client ID, client secret, and OAuth scopes
+- **gRPC Settings**: Service URLs for inter-service communication
+- **Logging Settings**: Log levels, paths, and output formats
+
+### Configuration Binding
+- Uses `IOptions<T>` pattern for strongly-typed configuration
+- Automatic binding from JSON to C# classes
+- Environment variable override support
+- Validation and error handling for required settings
+
+### Recent Fixes Applied
+- ✅ **MongoDB Configuration**: Fixed namespace conflicts and binding issues
+- ✅ **Duplicate Class Definitions**: Removed duplicate `MongoDbSettings` class
+- ✅ **Service Registration**: Updated dependency injection configuration
+
 ## Scalability Considerations
 
 ### Horizontal Scaling

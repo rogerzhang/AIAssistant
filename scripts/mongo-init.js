@@ -39,3 +39,4 @@ db.ios_calendar_data.createIndex({ "startTime": 1 });
 db.ios_calendar_data.createIndex({ "endTime": 1 });
 
 print('Database initialized successfully');
+
